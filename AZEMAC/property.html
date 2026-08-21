@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Property Details | AZEMAC Properties</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+
+<body>
+    <script src="js/supabase-client.js"></script>
+
+    <header>
+
+        <div class="logo">
+            <span>AZEMAC</span> Properties
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+    </header>
+
+
+    <main class="property-page">
+
+        <a href="index.html" class="back-link">
+            ← Back to Home Page
+        </a>
+
+        <div class="property-gallery" id="propertyGallery">
+
+            <button class="gallery-btn prev" id="prevBtn">
+                ❮
+            </button>
+
+            <img id="propertyImage" src="" alt="Property">
+
+            <button class="gallery-btn next" id="nextBtn">
+                ❯
+            </button>
+
+            <div class="gallery-dots" id="galleryDots"></div>
+
+            <div class="gallery-thumbnails" id="galleryThumbnails"></div>
+
+        </div>
+        <div class="property-information">
+
+            <div class="property-header">
+
+                <div>
+
+                    <span class="property-status" id="propertyStatus">
+                        FOR SALE
+                    </span>
+
+                    <h1 id="propertyTitle">
+                        Luxury Duplex
+                    </h1>
+
+                    <p id="propertyLocation">
+                        📍 Lekki, Lagos
+                    </p>
+
+                </div>
+
+                <div class="property-price" id="propertyPrice">
+                    ₦120,000,000
+                </div>
+
+            </div>
+
+
+            <div class="property-details">
+
+                <div>
+                    📍
+                    <strong id="detailsLocation">Lekki, Lagos</strong>
+                    <span>Location</span>
+                </div>
+
+                <div>
+                    🛏
+                    <strong>5</strong>
+                    <span>Bedrooms</span>
+                </div>
+
+                <div>
+                    🚿
+                    <strong>6</strong>
+                    <span>Bathrooms</span>
+                </div>
+
+                <div>
+                    🚗
+                    <strong>4</strong>
+                    <span>Parking</span>
+                </div>
+
+                <div>
+                    📐
+                    <strong>750</strong>
+                    <span>sqm</span>
+                </div>
+
+            </div>
+
+
+            <section class="property-description">
+
+                <h2>About this property</h2>
+
+                <p id="propertyDescription">
+                    A premium luxury duplex located in Lekki, Lagos.
+                    This property offers spacious living areas and
+                    modern finishes in a desirable location.
+                </p>
+
+            </section>
+
+            <section class="property-location">
+
+                <h2>📍 Property Location</h2>
+
+                <div id="mapContainer" class="map-container">
+                    <iframe 
+                        id="propertyMap"
+                        class="property-map"
+                        src=""
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <p id="mapNotice" style="display: none; text-align: center; color: #999; margin-top: 20px;">
+                    📍 Map location not available for this property
+                </p>
+
+            </section>
+            <button id="shareProperty" class="share-property">
+                📤 Share Property
+            </button>
+
+            <section class="property-inquiry">
+
+                <h2>Interested in this property?</h2>
+
+                <p>
+                    Send us your details and AZEMAC Properties will get back to you.
+                </p>
+
+                <form id="propertyInquiryForm">
+
+                    <input type="text" id="inquiryName" placeholder="Your Name" required>
+
+                    <input type="tel" id="inquiryPhone" placeholder="Phone Number" required>
+
+                    <input type="email" id="inquiryEmail" placeholder="Email Address" required>
+
+                    <textarea id="inquiryMessage" rows="5" placeholder="I'm interested in this property..."
+                        required></textarea>
+
+                    <button type="submit">
+                        Send Inquiry
+                    </button>
+
+                </form>
+
+            </section>
+            <div class="property-contact">
+
+
+                <a href="mailto:professorruhdee3@email.com">
+                    📧 Email AZEMAC
+                </a>
+
+                <a href="tel:+2347039903728">
+                    📞 Call AZEMAC
+                </a>
+
+            </div>
+            <section class="related-properties">
+
+                <h2>You May Also Like</h2>
+
+                <p class="related-subtitle">
+                    Explore more properties from AZEMAC Properties.
+                </p>
+
+                <div class="related-grid">
+
+                </div>
+
+                <script>
+                    const relatedGrid = document.querySelector(".related-grid");
+
+                    const currentPropertyId =
+                        Number(new URLSearchParams(window.location.search).get("id"));
+
+                    (async function loadRelatedProperties() {
+
+                        const allProperties = await fetchAllProperties();
+
+                        const relatedProperties =
+                            allProperties.filter(function (property) {
+                                return property.id !== currentPropertyId;
+                            });
+
+                        relatedProperties.slice(0, 3).forEach(function (property) {
+
+                            const card = document.createElement("div");
+
+                            card.className = "related-card";
+
+                            card.innerHTML = `
+            <img
+                src="${property.image}"
+                alt="${property.name}"
+            >
+
+            <div class="related-content">
+
+                <span class="property-status">
+                    ${property.status || "FOR SALE"}
+                </span>
+
+                <h3>${property.name}</h3>
+
+                <p>📍 ${property.location}</p>
+
+                <strong>
+                    ₦${Number(property.price).toLocaleString()}
+                </strong>
+
+                <a
+                    href="property.html?id=${property.id}"
+                >
+                    View Property
+                </a>
+
+            </div>
+        `;
+
+                            relatedGrid.appendChild(card);
+
+                        });
+
+                    })();
+                </script>
+            </section>
+
+
+        </div>
+
+    </main>
+    <section id="contact" class="contact-section">
+        <a href="https://wa.me/2347039903728" target="_blank" rel="noopener noreferrer" class="whatsapp-link">
+            💬 Chat with us on WhatsApp
+        </a>
+
+        <h2>Contact AZEMAC Properties</h2>
+
+        <p>Have a question or interested in a property?</p>
+
+        <div class="contact-details">
+            <p>📞 Phone: +234 7039903728</p>
+            <p>📧 Email: professorruhdee3@email.com</p>
+
+        </div>
+
+        <footer>
+
+            <p>© 2026 AZEMAC Properties | All Rights Reserved</p>
+
+        </footer>
+        <script>
+          (async function () {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const propertyId = Number(urlParams.get("id"));
+
+            const savedProperty =
+                propertyId ? await fetchPropertyById(propertyId) : null;
+
+            let property = null;
+
+            if (savedProperty) {
+                property = {
+                    title: savedProperty.name,
+                    location: "📍 " + savedProperty.location,
+                    price: "₦" + Number(savedProperty.price).toLocaleString(),
+                    status: savedProperty.status || "FOR SALE",
+                    bedrooms: savedProperty.bedrooms || "—",
+                    bathrooms: savedProperty.bathrooms || "—",
+                    parking: savedProperty.parking || "—",
+                    size: savedProperty.size || "—",
+                    description: savedProperty.description || "No description available.",
+                    image: savedProperty.image || "",
+                    mapUrl: savedProperty.map_url || ""
+                };
+            }
+            if (property) {
+
+                // Basic property information
+
+                document.getElementById("propertyTitle").textContent =
+                    property.title;
+
+                document.getElementById("propertyLocation").textContent =
+                    property.location;
+
+                document.getElementById("propertyPrice").textContent =
+                    property.price;
+                document.getElementById("propertyStatus").textContent =
+                    property.status || "FOR SALE";
+
+                document.getElementById("propertyDescription").textContent =
+                    property.description;
+
+
+                // Property details
+
+                // Location (NEW - first position)
+                document.querySelector(
+                    ".property-details div:nth-child(1) strong"
+                ).textContent = property.location;
+
+                // Bedrooms (shifted to 2nd position)
+                document.querySelector(
+                    ".property-details div:nth-child(2) strong"
+                ).textContent = property.bedrooms;
+
+                // Bathrooms (shifted to 3rd position)
+                document.querySelector(
+                    ".property-details div:nth-child(3) strong"
+                ).textContent = property.bathrooms;
+
+                // Parking (shifted to 4th position)
+                document.querySelector(
+                    ".property-details div:nth-child(4) strong"
+                ).textContent = property.parking;
+
+                // Size (shifted to 5th position)
+                document.querySelector(
+                    ".property-details div:nth-child(5) strong"
+                ).textContent = property.size;
+
+
+                // =========================
+                // GOOGLE MAPS
+                // =========================
+
+                const mapFrame = document.getElementById("propertyMap");
+                const mapNotice = document.getElementById("mapNotice");
+                const mapContainer = document.getElementById("mapContainer");
+
+                if (property.mapUrl && property.mapUrl.trim()) {
+                    // Map URL provided
+                    mapFrame.src = property.mapUrl;
+                    mapContainer.style.display = "block";
+                    mapNotice.style.display = "none";
+                } else {
+                    // No map URL
+                    mapContainer.style.display = "none";
+                    mapNotice.style.display = "block";
+                }
+
+
+                // =========================
+                // SLIDESHOW
+                // =========================
+
+                const images = property.images && property.images.length
+                    ? property.images
+                    : property.image
+                        ? [property.image]
+                        : [];
+                const propertyImage =
+                    document.getElementById("propertyImage");
+
+                const prevBtn =
+                    document.getElementById("prevBtn");
+
+                const nextBtn =
+                    document.getElementById("nextBtn");
+
+                const galleryDots =
+                    document.getElementById("galleryDots");
+                const galleryThumbnails =
+                    document.getElementById("galleryThumbnails");
+
+
+                let currentImage = 0;
+                let slideInterval;
+
+
+                function showImage(index) {
+
+                    if (!images.length) {
+                        propertyImage.src = "";
+                        propertyImage.alt = "No property image available";
+                        return;
+                    }
+
+                    currentImage = index;
+
+                    propertyImage.style.opacity = "0";
+
+                    setTimeout(() => {
+
+                        propertyImage.src = images[currentImage];
+
+                        propertyImage.style.opacity = "1";
+
+                    }, 200);
+
+
+                    // =========================
+                    // DOTS
+                    // =========================
+
+                    galleryDots.innerHTML = "";
+
+                    images.forEach(function (image, imageIndex) {
+
+                        const dot = document.createElement("button");
+
+                        dot.classList.add("gallery-dot");
+
+                        if (imageIndex === currentImage) {
+                            dot.classList.add("active");
+                        }
+
+                        dot.addEventListener("click", function () {
+
+                            showImage(imageIndex);
+                            restartSlideshow();
+
+                        });
+
+                        galleryDots.appendChild(dot);
+
+                    });
+
+
+                    // =========================
+                    // THUMBNAILS
+                    // =========================
+
+                    if (galleryThumbnails) {
+
+                        galleryThumbnails.innerHTML = "";
+
+                        images.forEach(function (image, imageIndex) {
+
+                            const thumbnail =
+                                document.createElement("img");
+
+                            thumbnail.src = image;
+
+                            thumbnail.alt =
+                                `${property.title} image ${imageIndex + 1}`;
+
+                            thumbnail.classList.add("gallery-thumbnail");
+
+                            if (imageIndex === currentImage) {
+                                thumbnail.classList.add("active");
+                            }
+
+                            thumbnail.addEventListener("click", function () {
+
+                                showImage(imageIndex);
+                                restartSlideshow();
+
+                            });
+
+                            galleryThumbnails.appendChild(thumbnail);
+
+                        });
+
+                    }
+
+                }
+
+                // Next
+
+                function nextImage() {
+
+                    currentImage++;
+
+                    if (currentImage >= images.length) {
+                        currentImage = 0;
+                    }
+
+                    showImage(currentImage);
+
+                }
+
+
+                // Previous
+
+                function previousImage() {
+
+                    currentImage--;
+
+                    if (currentImage < 0) {
+                        currentImage = images.length - 1;
+                    }
+
+                    showImage(currentImage);
+
+                }
+
+
+                // Buttons
+
+                nextBtn.addEventListener("click", () => {
+
+                    nextImage();
+                    restartSlideshow();
+
+                });
+
+
+                prevBtn.addEventListener("click", () => {
+
+                    previousImage();
+                    restartSlideshow();
+
+                });
+
+
+                // Automatic slideshow
+
+                function startSlideshow() {
+
+                    slideInterval =
+                        setInterval(nextImage, 5000);
+
+                }
+
+
+                function stopSlideshow() {
+
+                    clearInterval(slideInterval);
+
+                }
+
+
+                function restartSlideshow() {
+
+                    stopSlideshow();
+                    startSlideshow();
+
+                }
+
+
+                // Pause when mouse is over gallery
+
+                const gallery =
+                    document.getElementById("propertyGallery");
+
+                gallery.addEventListener(
+                    "mouseenter",
+                    stopSlideshow
+                );
+
+                gallery.addEventListener(
+                    "mouseleave",
+                    startSlideshow
+                );
+
+
+                // Start
+
+                showImage(0);
+
+                startSlideshow();
+
+
+            } else {
+
+                document.querySelector(".property-page").innerHTML =
+                    `
+        <p>
+            Property not found.
+            <a href="index.html">
+                Go back to properties.
+            </a>
+        </p>
+        `;
+
+            }
+            // ==========================================
+            // SHARE PROPERTY
+            // ==========================================
+
+            // ==========================================
+            // SHARE PROPERTY
+            // ==========================================
+
+            const shareButton = document.getElementById("shareProperty");
+
+            if (shareButton) {
+
+                shareButton.addEventListener("click", async function () {
+
+                    const propertyUrl = window.location.href;
+
+                    const propertyTitle =
+                        document.getElementById("propertyTitle").textContent.trim();
+
+                    // Try native sharing first
+                    if (
+                        navigator.share &&
+                        window.isSecureContext
+                    ) {
+
+                        try {
+
+                            await navigator.share({
+                                title: propertyTitle,
+                                text: `Check out ${propertyTitle} on AZEMAC Properties`,
+                                url: propertyUrl
+                            });
+
+                            return;
+
+                        } catch (error) {
+
+                            // User cancelled sharing
+                            if (error.name === "AbortError") {
+                                return;
+                            }
+
+                        }
+
+                    }
+
+                    // Clipboard fallback
+                    try {
+
+                        if (navigator.clipboard) {
+
+                            await navigator.clipboard.writeText(propertyUrl);
+
+                            alert("Property link copied! 📋");
+
+                            return;
+                        }
+
+                    } catch (error) {
+
+                        console.log("Clipboard failed.");
+                    }
+
+
+                    // Final fallback
+                    const textArea =
+                        document.createElement("textarea");
+
+                    textArea.value = propertyUrl;
+
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-9999px";
+
+                    document.body.appendChild(textArea);
+
+                    textArea.focus();
+                    textArea.select();
+
+                    try {
+
+                        document.execCommand("copy");
+
+                        alert("Property link copied! 📋");
+
+                    } catch (error) {
+
+                        alert(
+                            "Unable to share automatically. Please copy the page link from your browser."
+                        );
+
+                    }
+
+                    document.body.removeChild(textArea);
+
+                });
+
+            }
+
+
+            // ==========================================
+            // PROPERTY INQUIRY FORM
+            // ==========================================
+
+            const inquiryForm =
+                document.getElementById("propertyInquiryForm");
+
+            if (inquiryForm) {
+
+                inquiryForm.addEventListener("submit", function (event) {
+
+                    event.preventDefault();
+
+                    const name =
+                        document.getElementById("inquiryName").value.trim();
+
+                    const phone =
+                        document.getElementById("inquiryPhone").value.trim();
+
+                    const email =
+                        document.getElementById("inquiryEmail").value.trim();
+
+                    const message =
+                        document.getElementById("inquiryMessage").value.trim();
+
+                    const propertyName =
+                        document.getElementById("propertyTitle").textContent;
+
+                    const subject =
+                        encodeURIComponent(
+                            `Property Inquiry - ${propertyName}`
+                        );
+
+                    const body =
+                        encodeURIComponent(
+                            `Hello AZEMAC Properties,
+
+I am interested in: ${propertyName}
+
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+
+Message:
+${message}`
+                        );
+
+                    window.location.href =
+                        `mailto:professorruhdee3@email.com?subject=${subject}&body=${body}`;
+
+                });
+
+            }
+        })();
+        </script>
+</body>
+
+</html>

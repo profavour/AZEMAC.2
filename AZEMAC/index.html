@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZEMAC Properties</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <header>
+
+        <div class="logo">
+            <span>AZEMAC</span> Properties
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="saved.html">Saved Properties</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+            ☰
+        </button>
+    </header>
+
+    <section class="hero" id="hero">
+
+        <div class="hero-box">
+
+            <h1>Discover Your Perfect Home in Nigeria</h1>
+
+            <p>Buy, Rent or Invest in Premium Houses,
+                Apartments, Lands and Commercial Properties.</p>
+
+            <div class="search">
+
+                <select id="locationSearch">
+                    <option>Select Location</option>
+                    <option>Lagos</option>
+                    <option>Abuja</option>
+                    <option>Port Harcourt</option>
+                    <option>Ibadan</option>
+                    <option>Benin City</option>
+                    <option>Enugu</option>
+                    <option>Owerri</option>
+                    <option>Kano</option>
+                </select>
+
+                <select id="propertyType">
+                    <option>Property Type</option>
+                    <option>House</option>
+                    <option>Land</option>
+                    <option>Apartment</option>
+                    <option>Commercial</option>
+                </select>
+
+                <select id="budgetSearch">
+                    <option>What's Your Budget</option>
+                    <option>₦15M - ₦20M</option>
+                    <option>₦20M - ₦30M</option>
+                    <option>₦30M - ₦50M</option>
+                    <option>₦50M - ₦100M</option>
+                    <option>₦100M+</option>
+                </select>
+
+                <button id="searchBtn">Search</button>
+                <button id="clearSearchBtn" type="button">
+                    Clear
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+    <h2 class="section-title">Featured Properties</h2>
+    <div class="properties" id="buy">
+
+        <p id="noResults" style="display: none;">
+            No properties found 😕
+        </p>
+
+    </div>
+    <section id="contact" class="contact-section">
+        <a href="https://wa.me/2347039903728" target="_blank" rel="noopener noreferrer" class="whatsapp-link">
+            💬 Chat with us on WhatsApp
+        </a>
+
+        <h2>Contact AZEMAC Properties</h2>
+
+        <p>Have a question or interested in a property?</p>
+
+        <div class="contact-details">
+            <p>📞 Phone: +234 7039903728</p>
+            <p>📧 Email: professorruhdee3@email.com</p>
+
+        </div>
+
+    </section>
+    <footer>
+
+        <p>© 2026 AZEMAC Properties | All Rights Reserved</p>
+
+    </footer>
+
+
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        const menuToggle = document.getElementById("menuToggle");
+        const nav = document.querySelector("header nav");
+
+        menuToggle.addEventListener("click", function () {
+            nav.classList.toggle("active");
+        });
+
+        nav.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", function () {
+                nav.classList.remove("active");
+            });
+        });
+    </script>
+    <script>
+        const hero = document.getElementById("hero");
+
+        const images = [
+            "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600",
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600",
+            "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600",
+            "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600"
+        ];
+
+        let currentImage = 0;
+
+        function changeHeroImage() {
+            currentImage++;
+
+            if (currentImage >= images.length) {
+                currentImage = 0;
+            }
+
+            hero.style.backgroundImage =
+                `url('${images[currentImage]}')`;
+        }
+
+        setInterval(changeHeroImage, 5000);
+
+    </script>
+    <script>
+        // ==========================================
+        // LOAD PROPERTIES FROM SUPABASE
+        // ==========================================
+
+        const propertiesContainer =
+            document.getElementById("buy");
+
+        const noResults =
+            document.getElementById("noResults");
+
+        async function loadAdminProperties() {
+
+            const properties = await fetchAllProperties();
+
+            properties.forEach(function (property) {
+                const card = document.createElement("div");
+
+                card.className = "card";
+
+                card.dataset.location =
+                    String(property.location || "").toLowerCase();
+                card.dataset.type =
+                    String(property.type || "").toLowerCase();
+
+                card.dataset.price =
+                    Number(property.price) || 0;
+
+                card.dataset.propertyId =
+                    property.id;
+
+                card.innerHTML = `
+                <img
+                    src="${property.image}"
+                    alt="${property.name}"
+                >
+
+                <div class="card-content">
+
+                    <div class="badge">
+                        ${property.status}
+                    </div>
+
+                    <h3>${property.name}</h3>
+<button
+    class="favorite-btn"
+    data-property-id="${property.id}"
+    data-property-name="${property.name}"
+    aria-label="Save property"
+>
+    ♡
+</button>
+                    <p>📍 ${property.location}</p>
+
+                    <div class="details">
+
+                        <span>🛏 ${property.bedrooms} Beds</span>
+
+                        <span>🚿 ${property.bathrooms} Baths</span>
+
+                        <span>🚗 ${property.parking} Parking</span>
+
+                        <span>📐 ${property.size} sqm</span>
+
+                    </div>
+
+                    <div class="price">
+                        ₦${Number(property.price).toLocaleString()}
+                    </div>
+
+                    <a
+                        href="property.html?id=${property.id}"
+                        class="view-property"
+                    >
+                        View Property
+                    </a>
+
+                </div>
+            `;
+
+                propertiesContainer.appendChild(card);
+
+            });
+
+            if (typeof window.updateFavoriteButtons === "function") {
+                window.updateFavoriteButtons();
+            }
+
+        }
+
+
+        // Load properties when page opens
+        loadAdminProperties();
+
+
+        // ==========================================
+        // PROPERTY SEARCH
+        // ==========================================
+
+        const homepageSearchBtn =
+            document.getElementById("searchBtn");
+
+        if (homepageSearchBtn) {
+
+            homepageSearchBtn.addEventListener("click", function () {
+                const location =
+                    document.getElementById("locationSearch")
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+                const propertyType =
+                    document.getElementById("propertyType")
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+                const budget =
+                    document.getElementById("budgetSearch").value;
+
+                const properties =
+                    document.querySelectorAll(".card");
+
+                const noResults =
+                    document.getElementById("noResults");
+
+                let foundProperty = false;
+
+                properties.forEach(function (property) {
+
+                    const propertyLocation =
+                        (property.dataset.location || "").toLowerCase();
+
+                    const propertyTypeValue =
+                        (property.dataset.type || "").toLowerCase();
+
+                    const propertyPrice =
+                        Number(property.dataset.price) || 0;
+
+
+                    // LOCATION
+                    let locationMatch = true;
+
+                    if (
+                        location &&
+                        location !== "select location"
+                    ) {
+                        locationMatch =
+                            propertyLocation.includes(location);
+                    }
+
+
+                    // PROPERTY TYPE
+
+                    let typeMatch = true;
+
+                    if (
+                        propertyType &&
+                        propertyType.toLowerCase() !== "property type"
+                    ) {
+
+                        typeMatch =
+                            propertyTypeValue.trim().toLowerCase() ===
+                            propertyType.trim().toLowerCase();
+
+                    }
+
+
+                    // BUDGET
+                    let budgetMatch = true;
+
+                    if (budget !== "What's Your Budget") {
+
+                        if (budget === "₦15M - ₦20M") {
+
+                            budgetMatch =
+                                propertyPrice >= 15000000 &&
+                                propertyPrice <= 20000000;
+
+                        }
+
+                        else if (budget === "₦20M - ₦30M") {
+
+                            budgetMatch =
+                                propertyPrice >= 20000000 &&
+                                propertyPrice <= 30000000;
+
+                        }
+
+                        else if (budget === "₦30M - ₦50M") {
+
+                            budgetMatch =
+                                propertyPrice >= 30000000 &&
+                                propertyPrice <= 50000000;
+
+                        }
+
+                        else if (budget === "₦50M - ₦100M") {
+
+                            budgetMatch =
+                                propertyPrice >= 50000000 &&
+                                propertyPrice <= 100000000;
+
+                        }
+
+                        else if (budget === "₦100M+") {
+
+                            budgetMatch =
+                                propertyPrice >= 100000000;
+
+                        }
+                    }
+
+
+                    // SHOW / HIDE
+
+                    if (
+                        locationMatch &&
+                        typeMatch &&
+                        budgetMatch
+                    ) {
+
+                        property.style.display = "";
+
+                        foundProperty = true;
+
+                    } else {
+
+                        property.style.display = "none";
+
+                    }
+
+                });
+
+
+                if (noResults) {
+
+                    noResults.style.display =
+                        foundProperty ? "none" : "block";
+
+                }
+
+            });
+
+        }
+
+
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const STORAGE_KEY = "azemacFavorites";
+
+            function getFavorites() {
+                return JSON.parse(
+                    localStorage.getItem(STORAGE_KEY)
+                ) || [];
+            }
+
+            function saveFavorites(favorites) {
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(favorites)
+                );
+            }
+
+            function updateFavoriteButtons() {
+
+                const favorites = getFavorites();
+
+                document
+                    .querySelectorAll(".favorite-btn")
+                    .forEach(function (button) {
+
+                        const propertyId =
+                            Number(button.dataset.propertyId);
+
+                        if (favorites.includes(propertyId)) {
+
+                            button.textContent = "♥";
+                            button.classList.add("saved");
+
+                        } else {
+
+                            button.textContent = "♡";
+                            button.classList.remove("saved");
+
+                        }
+
+                    });
+            }
+
+            // Cards load asynchronously from Supabase, so keep the
+            // buttons in sync once they actually exist in the DOM.
+            window.updateFavoriteButtons = updateFavoriteButtons;
+
+            document.addEventListener("click", function (event) {
+
+                const button =
+                    event.target.closest(".favorite-btn");
+
+                if (!button) return;
+
+                const propertyId =
+                    Number(button.dataset.propertyId);
+
+                let favorites = getFavorites();
+
+                if (favorites.includes(propertyId)) {
+
+                    favorites = favorites.filter(function (id) {
+                        return id !== propertyId;
+                    });
+
+                } else {
+
+                    favorites.push(propertyId);
+
+                }
+
+                saveFavorites(favorites);
+                updateFavoriteButtons();
+
+            });
+
+            updateFavoriteButtons();
+
+        });
+        const homepageClearSearchBtn =
+            document.getElementById("clearSearchBtn");
+
+        if (homepageClearSearchBtn) {
+
+            homepageClearSearchBtn.addEventListener("click", function () {
+                document.getElementById("locationSearch").selectedIndex = 0;
+                document.getElementById("propertyType").selectedIndex = 0;
+                document.getElementById("budgetSearch").selectedIndex = 0;
+
+                document.querySelectorAll(".card").forEach(function (card) {
+                    card.style.display = "";
+                });
+
+                const noResults = document.getElementById("noResults");
+
+                if (noResults) {
+                    noResults.style.display = "none";
+                }
+
+            });
+
+        }
+    </script>
+
+</body>
+
+</html>

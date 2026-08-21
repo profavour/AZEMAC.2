@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Saved Properties | AZEMAC Properties</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            <span>AZEMAC</span> Properties
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="saved.html">Saved Properties</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+    </header>
+    <a href="index.html" class="back-home-btn">
+        ← Back to Homepage
+    </a>
+
+    <main class="saved-page">
+
+        <h1>❤️ Saved Properties</h1>
+
+        <p class="saved-subtitle">
+            Properties you've saved for later.
+        </p>
+
+        <div id="savedProperties" class="properties">
+        </div>
+        <div id="emptySavedMessage" class="empty-saved-message">
+            <h2>♡ No Saved Properties</h2>
+            <p>You haven't saved any properties yet.</p>
+
+            <a href="index.html" class="back-home-btn">
+                Browse Properties
+            </a>
+        </div>
+
+        <p id="noSavedProperties" style="display: none;">
+            You haven't saved any properties yet.
+        </p>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            © 2026 AZEMAC Properties | All Rights Reserved
+        </p>
+
+    </footer>
+
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+
+        const savedContainer =
+            document.getElementById("savedProperties");
+
+        const emptyMessage =
+            document.getElementById("noSavedProperties");
+
+
+        // Get saved property ids
+
+        const savedIds =
+            (JSON.parse(localStorage.getItem("azemacFavorites")) || [])
+                .map(Number);
+
+
+        (async function loadSavedProperties() {
+
+            // Show empty state
+
+            if (savedIds.length === 0) {
+
+                emptyMessage.style.display = "block";
+                return;
+
+            }
+
+            const allProperties = await fetchAllProperties();
+
+            const properties = allProperties.filter(function (property) {
+                return savedIds.includes(property.id);
+            });
+
+            if (properties.length === 0) {
+
+                emptyMessage.style.display = "block";
+                return;
+
+            }
+
+
+            // Create saved cards
+
+            properties.forEach(function (property) {
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+
+                card.innerHTML = `
+
+                    <img
+                        src="${property.image}"
+                        alt="${property.name}"
+                    >
+
+                    <div class="card-content">
+
+                        <div class="badge">
+                            SAVED ❤️
+                        </div>
+
+                        <h3>
+                            ${property.name}
+                        </h3>
+
+                        <p>
+                            📍 ${property.location}
+                        </p>
+
+                        <div class="price">
+                            ₦${Number(property.price).toLocaleString()}
+                        </div>
+
+                      <a
+        href="property.html?id=${property.id}"
+        class="view-property"
+    >
+        View Property
+    </a>
+
+    <button
+        class="remove-saved"
+        onclick="removeSavedProperty(${property.id})"
+    >
+        🗑️ Remove from Saved
+    </button>
+                    </div>
+
+                `;
+
+
+                savedContainer.appendChild(card);
+
+            });
+
+        })();
+
+
+        function removeSavedProperty(propertyId) {
+
+            let saved =
+                (JSON.parse(localStorage.getItem("azemacFavorites")) || [])
+                    .map(Number);
+
+            saved = saved.filter(function (id) {
+                return id !== propertyId;
+            });
+
+            localStorage.setItem(
+                "azemacFavorites",
+                JSON.stringify(saved)
+            );
+
+            location.reload();
+        }
+
+
+    </script>
+
+</body>
+
+</html>

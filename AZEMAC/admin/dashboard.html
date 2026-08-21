@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | AZEMAC Properties</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+
+<body>
+    <button type="button" onclick="window.location.href='../index.html'" class="home-button">
+        🏠 Go to Homepage
+    </button>
+
+    <header class="admin-header">
+
+        <div class="admin-logo">
+            <span>AZEMAC</span> Properties
+        </div>
+
+        <button id="logoutBtn" class="logout-btn">
+            Logout
+        </button>
+
+    </header>
+
+
+    <main class="dashboard" id="dashboardMain">
+
+        <section class="dashboard-heading">
+
+            <div>
+                <h1>Admin Dashboard</h1>
+
+                <p>
+                    Manage your AZEMAC Properties website.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- STATISTICS -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <span>Total Properties</span>
+
+                <strong id="totalProperties">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>For Sale</span>
+
+                <strong id="saleProperties">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>For Rent</span>
+
+                <strong id="rentProperties">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>Sold</span>
+
+                <strong id="soldProperties">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROPERTY MANAGEMENT -->
+
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Properties</h2>
+
+                    <p>
+                        Manage properties listed on AZEMAC.
+                    </p>
+
+                </div>
+
+                <button id="addPropertyBtn" class="primary-btn">
+                    + Add Property
+                </button>
+
+            </div>
+
+
+            <div class="property-table-container">
+
+                <table class="property-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Property</th>
+
+                            <th>Location</th>
+
+                            <th>Price</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody id="propertyTableBody"></tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ADD PROPERTY FORM -->
+
+        <section class="dashboard-section add-property-section" id="addPropertySection" style="display: none;">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Add New Property</h2>
+
+                    <p>
+                        Enter the details of the property you want to add.
+                    </p>
+                </div>
+
+                <button id="cancelAddProperty" class="edit-btn">
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <form id="propertyForm" class="property-form">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="propertyName">Property Name</label>
+
+                        <input type="text" id="propertyName" placeholder="e.g. Luxury Duplex" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyLocation">Location</label>
+
+                        <input type="text" id="propertyLocation" placeholder="e.g. Lekki, Lagos" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyType">Property Type</label>
+
+                        <select id="propertyType" required>
+
+                            <option value="">Select Type</option>
+                            <option value="house">House</option>
+                            <option value="land">Land</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="commercial">Commercial</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyPrice">Price</label>
+
+                        <input type="number" id="propertyPrice" placeholder="120000000" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyBedrooms">Bedrooms</label>
+
+                        <input type="number" id="propertyBedrooms" placeholder="5" min="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyBathrooms">Bathrooms</label>
+
+                        <input type="number" id="propertyBathrooms" placeholder="6" min="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyParking">Parking Spaces</label>
+
+                        <input type="number" id="propertyParking" placeholder="4" min="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertySize">Size (sqm)</label>
+
+                        <input type="number" id="propertySize" placeholder="750" min="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="propertyStatus">Status</label>
+
+                        <select id="propertyStatus" required>
+
+                            <option value="FOR SALE">For Sale</option>
+                            <option value="FOR RENT">For Rent</option>
+                            <option value="SOLD">Sold</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="propertyImage">
+                            Main Image URL
+                        </label>
+
+                        <input type="url" id="propertyImage" placeholder="https://example.com/image.jpg" required>
+                        <img id="propertyImagePreview" src="" alt="Property image preview"
+                            style="display: none; max-width: 300px; width: 100%; margin-top: 10px; border-radius: 10px;">
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="propertyDescription">
+                        Description
+                    </label>
+
+                    <textarea id="propertyDescription" rows="5" placeholder="Describe the property..."
+                        required></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="propertyMapUrl">
+                        📍 Google Maps Embed Link (Optional)
+                    </label>
+
+                    <input type="url" id="propertyMapUrl" 
+                        placeholder="Paste Google Maps embed link here...">
+
+                    <small style="color: #666; margin-top: 5px; display: block;">
+                        How to get it: Open Google Maps → Share → Embed a map → Copy iframe src
+                    </small>
+
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    Add Property
+                </button>
+
+            </form>
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="admin-footer">
+
+        <p>
+            © 2026 AZEMAC Properties — Admin Panel
+        </p>
+
+    </footer>
+
+
+    <script src="../js/supabase-client.js"></script>
+    <script src="admin.js"></script>
+
+</body>
+
+</html>
